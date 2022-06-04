@@ -7,5 +7,9 @@ from .models import Profile
 class SignUpForm(UserCreationForm):
     email=forms.EmailField(max_length=254,help_text='Required.inform a valid email address')
     class Meta:
-        model:User
+        model=User
         fields=('username','email','password1','password2')
+
+# class PickForm(ModelForm):
+#     class Meta:
+#         model = Car        
