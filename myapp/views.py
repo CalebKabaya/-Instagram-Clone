@@ -1,7 +1,7 @@
 from django.shortcuts import  get_object_or_404, redirect, render
 from django.http import HttpResponse, Http404,HttpResponseRedirect
 from django.contrib import messages
-from .forms import SignUpForm,UpdateUserForm, UpdateUserProfileForm,PostForm
+from .forms import SignUpForm,UpdateUserForm, UpdateUserProfileForm,PostForm,CommentForm
 from .models import Profile, Post, User, Subscribers, Follow, Comment, Like
 from .emails import send_welcome_email
 from django.contrib.auth import authenticate, login, logout
@@ -19,77 +19,6 @@ def welcome(request):
     return render(request,'index.html')
 
 
-# def register(request):
-#     if request.method == "POST":
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             username = form.cleaned_data.get('username')
-#             email = form.cleaned_data['email']
-#             messages.success(request, f'Successfully created account created for {username}! Please log in to continue')
-#             return redirect('login')
-#     else:
-#         form = SignUpForm()
-#     return render(request, 'users/register.html', {'form':form})    
-
-
-# def register(request):
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             username = form.cleaned_data.get('username')
-#             raw_password = form.cleaned_data.get('password1')
-#             user = authenticate(username=username, password=raw_password)
-#             login(request, user)
-#             return redirect('login')
-#     else:
-#         form = SignUpForm()
-#     return render(request, 'users/register.html', {'form':form}) 
-
-# def login(request):
-
-#         return render(request, 'users/login.html',) 
-
-# def register(request):
-# 	if request.user.is_authenticated:
-# 		return redirect('welcome')
-# 	else:
-# 		form = SignUpForm()
-# 		if request.method == 'POST':
-# 			form = SignUpForm(request.POST)
-# 			if form.is_valid():
-# 				form.save()
-# 				user = form.cleaned_data.get('username')
-# 				messages.success(request, 'Account was created for ' + user)
-
-# 				return redirect('login')
-			
-
-# 		context = {'form':form}
-# 		return render(request, 'users/register.html', context)
-
-
-
-# def loginPage(request):
-# 	if request.user.is_authenticated:
-# 		return redirect('welcome')
-# 	else:
-# 		if request.method == 'POST':
-# 			username = request.POST.get('username')
-# 			password =request.POST.get('password')
-
-# 			user = authenticate(request, username=username, password=password)
-
-# 			if  user is not None:
-# 				login(request, user)
-# 				return redirect('welcome')
-# 			else:
-# 				messages.info(request, 'Username OR password is incorrect')
-
-# 		context = {}
-# 		return render(request, 'accounts/login.html', context)
-
 def logoutUser(request):
 	logout(request)
 	return redirect('login')
@@ -103,7 +32,7 @@ def login_page(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
-			return redirect('welcome')
+			return redirect('post')
 		else:
 			messages.success(request, ("There Was An Error Logging In, Try Again..."))	
 			return redirect('login')	
@@ -131,7 +60,7 @@ def register(request):
 		'form':form,
 		})
 @login_required(login_url='login')
-def profile(request,username):
+def profile(request, username):
     images = request.user.profile.posts.all()
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
@@ -174,43 +103,9 @@ def user_profile(request,username):
     return render(request, 'accounts_pages/user_profile.html', context)
             
 @login_required(login_url='login')
-# def index(request):
-#     images = Post.objects.all()
-#     comments = Comment.objects.all()
-#     users = User.objects.exclude(id=request.user.id)
-#     if request.method == "POST":
-#         form = PostForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             image = form.save(commit = False)
-#             image.user = request.user.profile
-#             image.save()
-#             messages.success(request, f'Successfully uploaded your pic!')
-#             return redirect('index')
-#     else:
-#         form = PostForm()
-#     return render(request, 'index.html', {"images":images[::-1], "form": form, "users": users, "comments": comments })
-# def post(request):
-#     images = Post.objects.all()
-#     users = User.objects.exclude(id=request.user.id)
-#     if request.method == 'POST':
-#         form = PostForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             post = form.save(commit=False)
-#             post.user = request.user.profile
-#             post.save()
-#             return HttpResponseRedirect(request.path_info)
-#     else:
-#         form = PostForm()
-#     params = {
-#         'images': images,
-#         'form': form,
-#         'users': users,
-
-#     }
-#     return render(request, 'index.html', params)
-@login_required
 def post(request):
     images = Post.objects.all()
+    print(images)
     comments = Comment.objects.all()
     users = User.objects.exclude(id=request.user.id)
     if request.method == "POST":
@@ -232,3 +127,31 @@ def image(request,image_id):
     except ObjectDoesNotExist:
         raise Http404()
     return render(request,"image.html", {"image":image})
+
+@login_required 
+def comment(request,image_id):
+        current_user=request.user
+        image = Post.objects.get(id=image_id)
+        user_profile = User.objects.get(username=current_user.username)
+        comments = Comment.objects.all()
+        if request.method == 'POST':
+                form = CommentForm(request.POST, request.FILES)
+                if form.is_valid():
+                        comment = form.save(commit=False)
+                        comment.image = image
+                        comment.user = request.user
+                        comment.save()  
+                return redirect('index')
+        else:
+                form = CommentForm()
+        return render(request, 'accounts_pages/comment.html',locals())
+@login_required
+def search_results(request):
+    if 'profile' in request.GET and request.GET["profile"]:
+        search_term = request.GET.get("profile")
+        searched_profiles = Profile.search_profile(search_term)
+        message = f"{search_term}"
+        return render(request, 'accounts_pages/search.html', {"message":message,"profiles": searched_profiles})
+    else:
+        message = "You haven't searched for any profile"
+    return render(request, 'accounts_pages/search.html', {'message': message})        
