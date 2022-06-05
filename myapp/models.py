@@ -41,7 +41,7 @@ class Profile(models.Model):
         instance.profile.save()         
 
 class Post(models.Model):
-    image=models.ImageField(upload_to='posts/')
+    image_post=models.ImageField(upload_to='posts/')
     name= models.CharField(max_length=250,blank=True)
     caption= models.CharField(max_length=250,blank=True)
     created_at=models.DateField(auto_now_add=True, null=True)
