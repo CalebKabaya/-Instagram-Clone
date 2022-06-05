@@ -53,7 +53,7 @@
                 {% for image in images %}
                     <div class="card mb-4 border">
                         <div class="card-title">
-                        <img src="{{image.user.profile_pic.url}}" class="rounded-circle border-bottom"
+                        <img src="{{image.user.user.profile_pic.url}" class="rounded-circle border-bottom"
                         alt="image" width="35" height="35">
                         {{image.user.user.username|title}}
                     </div>
@@ -63,7 +63,13 @@
                             <p><strong>Caption:</strong> {{image.caption}}</p>
                             <p><strong>Posted:</strong> {{image.created_at}}</p> 
                             <em><p><strong>Comments:</strong></p></em>
-                   
+                            {% for comment in comments %}
+                            {% if comment.image_id == image.id%}
+                                <p><strong>{{comment.user}}:</strong> {{comment.comment}}</p>
+                                <p>{{comment.posted | timesince}}</p><hr>
+                            {% endif %}
+                        {% endfor %}
+                        <a href=" {% url 'comment' image_id=image.id %}"><i class="fa fa-comment fa-2x"></i>Add a comment</a><br><br>
                     </div>
                     </div>
                 {% endfor %}
