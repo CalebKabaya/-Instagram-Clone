@@ -2,63 +2,86 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-
-
-    <div class="col-md-7">
+<div class="container">
+    <div class="row">
         <div class="row">
-            <button class="btn btn-sm btn-outline-primary ml-4 mb-3" data-toggle="modal" data-target="#imageUpload">
-                Upload Image
-            </button>
-            <div class="modal fade" id="imageUpload" tabindex="-1" role="dialog"
-                 aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Image Upload</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="" method="post" enctype="multipart/form-data" novalidate>
-                                {% csrf_token %}
-                                {{ form|crispy}}
-                                <!-- <div class="form-group mb-3">
-                                    <label for="">Image name </label> 
-                                    <input type="" class="form-control input-lg shadow-none" name="name" required /> 
-                                  </div>
-                                  <div class="form-group mb-3">
-                                    <label for="">Caption </label>
-                                    <input type="" class="form-control input-lg shadow-none" name="description" required />
-                                  </div>
-                                
-                                  <div class="form-group mb-3">
-                                    <label for="file">Select image file</label>
-                                    <input type="file" class="form-control input-lg shadow-none" name="photo" required />
-                                </div> -->
-                                <button class="btn btn-sm btn-success">Upload</button>
-                                <button type="button" class="btn btn-sm btn-outline-danger" data-dismiss="modal">
-                                    Close
+        <div class="col-md-1">
+            <div class="row">
+                <button class="btn btn-sm btn-outline-primary ml-4 mb-3" data-toggle="modal" data-target="#imageUpload">
+                    New Post
+                </button>
+                <div class="modal fade" id="imageUpload" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">New Post</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
                                 </button>
-                            </form>
+                            </div>
+                            <div class="modal-body">
+                                <form action="" method="post" enctype="multipart/form-data" novalidate>
+                                    {% csrf_token %}
+                                    {{ form|crispy}}
+                                    <!-- <div class="form-group mb-3">
+                                        <label for="">Image name </label> 
+                                        <input type="" class="form-control input-lg shadow-none" name="name" required /> 
+                                      </div>
+                                      <div class="form-group mb-3">
+                                        <label for="">Caption </label>
+                                        <input type="" class="form-control input-lg shadow-none" name="description" required />
+                                      </div>
+                                    
+                                      <div class="form-group mb-3">
+                                        <label for="file">Select image file</label>
+                                        <input type="file" class="form-control input-lg shadow-none" name="photo" required />
+                                    </div> -->
+                                    <button class="btn btn-sm btn-success">Upload</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-dismiss="modal">
+                                        Close
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        </div>
-
-
-        <!-- <div class="col-md-3">
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Upload Pic</legend>
-                        {{ form|crispy }}
-                </fieldset>
-                <div class="from-group">
-                    <button class="btn btn-outline-info" type="submit">Upload</button>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-6"> 
+                {% for image in images %}
+                    <div class="card mb-4 border">
+                        <div class="card-title">
+                        <img src="{{image.user.profile_pic.url}}" class="rounded-circle border-bottom"
+                        alt="image" width="35" height="35">
+                        {{image.user.user.username|title}}
+                    </div>
+                    <div class="card-body mb-4">
+                        <a href="{% url 'image' image.id %}"><img src="{{image.image_post.url}}" style="width:100%;" class="card-img" alt="Image"></a>
+                            <br><br>
+                            <p><strong>Caption:</strong> {{image.caption}}</p>
+                            <p><strong>Posted:</strong> {{image.created_at}}</p> 
+                            <em><p><strong>Comments:</strong></p></em>
+                   
+                    </div>
+                    </div>
+                {% endfor %}
                 </div>
-            </form>
-        </div> -->
+            <div class="col-md-2">
+                <div class="card-title text-secondary mt-2 mr-2 ml-2 ">Suggestions For You</div>
+                {% for user in users %}
+                <div class="col-md-2 mr-3 mt-1 mb-2">
+                    <img class="rounded-circle" src="{{ user.profile.profile_pic.url }}" width="45px" height="45px">
+                </div>
+                <div class="col-md-6 mr-2 mt-2">
+                    <span><a href="{% url 'user_profile'  %}">{{user.username}}</a></span>
+                </div>
+                <div class="col-md-4"></div>
+                {% endfor %}
+                </div> 
+    </div>
+</div>
+
+    
 {% endblock%}
