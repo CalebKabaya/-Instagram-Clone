@@ -189,22 +189,46 @@ def user_profile(request,username):
 #     else:
 #         form = PostForm()
 #     return render(request, 'index.html', {"images":images[::-1], "form": form, "users": users, "comments": comments })
+# def post(request):
+#     images = Post.objects.all()
+#     users = User.objects.exclude(id=request.user.id)
+#     if request.method == 'POST':
+#         form = PostForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             post = form.save(commit=False)
+#             post.user = request.user.profile
+#             post.save()
+#             return HttpResponseRedirect(request.path_info)
+#     else:
+#         form = PostForm()
+#     params = {
+#         'images': images,
+#         'form': form,
+#         'users': users,
+
+#     }
+#     return render(request, 'index.html', params)
+@login_required
 def post(request):
     images = Post.objects.all()
+    comments = Comment.objects.all()
     users = User.objects.exclude(id=request.user.id)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user.profile
-            post.save()
-            return HttpResponseRedirect(request.path_info)
+            image = form.save(commit = False)
+            image.user = request.user.profile
+            image.save()
+            messages.success(request, f'Successfully uploaded your pic!')
+            return redirect('post')
     else:
         form = PostForm()
-    params = {
-        'images': images,
-        'form': form,
-        'users': users,
+    return render(request, 'index.html', {"images":images[::-1], "form": form, "users": users, "comments": comments })
 
-    }
-    return render(request, 'index.html', params)
+
+def image(request,image_id):
+    try:
+        image = Post.objects.get(id = image_id)
+    except ObjectDoesNotExist:
+        raise Http404()
+    return render(request,"image.html", {"image":image})
