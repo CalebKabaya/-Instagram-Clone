@@ -63,11 +63,11 @@ To get the code..
 
 1. Cloning the repository:
   ```bash
-  git clone https://github.com/CalebKabaya/my-gallery
+  git clone https://github.com/CalebKabaya/-Instagram-Clone
   ```
 2. Move to the folder and install requirements
   ```bash
-  cd my_gallery
+  cd myapp
   pipenv install <package name>
   ```
 3. Running the application
@@ -86,9 +86,10 @@ No known bugs
 ## Contact Information
 
 For any further inquiries or contributions or comments, reach me at 
-### License
+[CalebKabaya](https://github.com/CalebKabaya/)
 
-## Licence
+
+### License
 
 [MIT](license)
 
