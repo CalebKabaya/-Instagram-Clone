@@ -19,6 +19,10 @@ import os
 import django_heroku
 import dj_database_url
 from decouple import config,Csv
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 
 MODE=config("MODE", default="dev")
 SECRET_KEY = config('SECRET_KEY')
@@ -76,6 +80,7 @@ INSTALLED_APPS = [
     'myapp',
     'bootstrap4',
     'crispy_forms',
+    'cloudinary',
 
 ]
 
@@ -164,6 +169,12 @@ USE_TZ = True
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+cloudinary.config(
+    cloud_name=config('CLOUD_NAME'), 
+    api_key=config('API_KEY', cast=int), 
+    api_secret=config('API_SECRET'),
+)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
