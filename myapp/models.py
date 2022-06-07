@@ -46,7 +46,7 @@ class Post(models.Model):
     caption= models.CharField(max_length=250,blank=True)
     created_at=models.DateField(auto_now_add=True, null=True)
     liked = models.ManyToManyField(User, related_name='likes', blank=True, )
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='images', null=True)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts', null=True)
     class Meta:
         '''
         Class method to display images by date published
