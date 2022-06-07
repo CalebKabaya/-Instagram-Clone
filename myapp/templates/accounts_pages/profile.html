@@ -9,7 +9,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-1"></div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" id="img2">
                         <img class="rounded-circle account-img" src="{{ user.profile.profile_pic.url }}">
                     </div>
                     <div class="col-md-6 mt-3">
@@ -35,7 +35,7 @@
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <a class="D-block mx-auto" href="">Change Password</a>
+                        <a class="D-block mx-auto" href="{% url 'logout' %}">Change Password</a>
                         <hr>
                         <a class="D-block mx-auto" href="{% url 'logout' %}">Log Out</a>
                         <hr>
@@ -62,8 +62,8 @@
     <div class="card-columns">
         {% for image in images %}
             <div class="card">
-                <div class="card-body">
-                    <img src="{{image.image.url}}" alt="{{image.caption}}" class="card-img">
+                <div class="card-body" id="image">
+                    <img src="{{image.image_post.url}}" alt="{{image.caption}}" class="card-img">
                     <p id="overlay"class="text"> 
                             <i class="fas fa-heart" style="color:white; font-size: 18"></i> 
                             <span style="color: white">{{image.likes.count}}</span>
