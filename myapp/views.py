@@ -60,8 +60,10 @@ def register(request):
 		'form':form,
 		})
 @login_required(login_url='login')
-def profile(request, username):
-    images = request.user.profile.posts.all()
+def profile(request):
+    # images = request.user.profile.posts.all()
+    images = Post.objects.all()  
+    print(images)
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
         prof_form = UpdateUserProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -155,3 +157,10 @@ def search_results(request):
     else:
         message = "You haven't searched for any profile"
     return render(request, 'accounts_pages/search.html', {'message': message})        
+
+
+# def user_profile(request):
+#     current_user = request.user
+#     my_images = Instagram_post.objects.filter(user=current_user)
+#     print(my_images)
+#     return render (request, 'profile.html', {'images':my_images})
