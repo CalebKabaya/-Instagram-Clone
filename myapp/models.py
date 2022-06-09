@@ -50,7 +50,7 @@ class Post(models.Model):
     name= models.CharField(max_length=250,blank=True)
     caption= models.CharField(max_length=250,blank=True)
     created_at=models.DateField(auto_now_add=True, null=True)
-    liked = models.ManyToManyField(User, related_name='likes', blank=True, )
+    likes = models.IntegerField(default=0)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts', null=True)
     class Meta:
         '''
@@ -81,37 +81,43 @@ class Post(models.Model):
         update_cap = cls.objects.filter(id = id).update(caption = caption)
         return update_cap    
 
-LIKE_CHOICES = (
-    ('Like', 'Like'),
-    ('Unlike', 'Unlike'),
-)
-class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null = True)
-    value = models.CharField(choices=LIKE_CHOICES, default='Like', max_length=10, null = True)
+# LIKE_CHOICES = (
+#     ('Like', 'Like'),
+#     ('Unlike', 'Unlike'),
+# )
+# class Like(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE, null = True)
+#     value = models.CharField(choices=LIKE_CHOICES, default='Like', max_length=10, null = True)
 
-    def __str__(self):
-        return self.post    
-
+#     def __str__(self):
+#         return self.post    
 class Comment(models.Model):
-    comment=models.TextField()
-    created=models.DateField(auto_now_add=True,null=True)
-    post=models.ForeignKey(Post,on_delete=models.CASCADE, related_name='comments')
-    user=models.ForeignKey(User,on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey(Post,on_delete = models.CASCADE,related_name='comments')
+    comment = models.TextField()
+    date = models.DateTimeField(auto_now_add =True,null=True)
     
-    def save_comment(self):
-        self.save()
-
-    def delete_comment(self):
-        self.delete()
-
-    @classmethod
-    def get_comments(cls,id):
-        comments = cls.objects.filter(post__id=id)
-        return comments
-
     def __str__(self):
-        return self.comment
+        return f'{self.post}'
+# class Comment(models.Model):
+#     comment=models.TextField()
+#     created=models.DateField(auto_now_add=True,null=True)
+#     post=models.ForeignKey(Post,on_delete=models.CASCADE, related_name='comments')
+#     user=models.ForeignKey(User,on_delete=models.CASCADE, related_name='comments')
+    
+#     def save_comment(self):
+#         self.save()
+
+#     def delete_comment(self):
+#         self.delete()
+
+#     @classmethod
+#     def get_comments(cls,id):
+#         comments = cls.objects.filter(post__id=id)
+#         return comments
+
+#     def __str__(self):
+#         return self.comment
 
 class Follow(models.Model):
     follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
@@ -123,3 +129,7 @@ class Follow(models.Model):
 class Subscribers(models.Model):
     name = models.CharField(max_length = 30)
     email = models.EmailField()        
+
+class Like(models.Model):
+    user = models.ForeignKey(User,on_delete = models.CASCADE,related_name='user_like')
+    post = models.ForeignKey(Post,on_delete=models.CASCADE,related_name='post_likes')    

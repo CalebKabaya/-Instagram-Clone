@@ -45,6 +45,12 @@
   #img2 img{
     width: 100%;
   }
+  .likes a{
+    color: black;
+  }
+  #postcont .far{
+    color: red;
+  }
 
   @media only screen and (min-device-width: 0px) and (max-device-width: 420px){
    #container{

@@ -9,6 +9,8 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 
 from django.contrib import messages
+from datetime import datetime
+
 
 
 # Create your views here.
@@ -107,8 +109,10 @@ def user_profile(request,username):
 @login_required(login_url='login')
 def post(request):
     images = Post.objects.all()
-    print(images)
+    # print(images)
     comments = Comment.objects.all()
+    # print(comments)
+
     users = User.objects.exclude(id=request.user.id)
     if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
@@ -126,27 +130,29 @@ def post(request):
 def image(request,image_id):
     try:
         image = Post.objects.get(id = image_id)
+        comments = Comment.objects.all()
+  
     except ObjectDoesNotExist:
         raise Http404()
-    return render(request,"image.html", {"image":image})
+    return render(request,"image.html", {"image":image,"comments":comments})
 
 @login_required 
-def comment(request,image_id):
-        current_user=request.user
-        image = Post.objects.get(id=image_id)
-        user_profile = User.objects.get(username=current_user.username)
-        comments = Comment.objects.all()
-        if request.method == 'POST':
-                form = CommentForm(request.POST, request.FILES)
-                if form.is_valid():
-                        comment = form.save(commit=False)
-                        comment.image = image
-                        comment.user = request.user
-                        comment.save()  
-                return redirect('index')
-        else:
-                form = CommentForm()
-        return render(request, 'accounts_pages/comment.html',locals())
+# def comment(request,image_id):
+#         current_user=request.user
+#         image = Post.objects.get(id=image_id)
+#         user_profile = User.objects.get(username=current_user.username)
+#         comments = Comment.objects.all()
+#         if request.method == 'POST':
+#                 form = CommentForm(request.POST, request.FILES)
+#                 if form.is_valid():
+#                         comment = form.save(commit=False)
+#                         comment.image = image
+#                         comment.user = request.user
+#                         comment.save()  
+#                 return redirect('index')
+#         else:
+#                 form = CommentForm()
+#         return render(request, 'accounts_pages/comment.html',locals())
 @login_required
 def search_results(request):
     if 'profile' in request.GET and request.GET["profile"]:
@@ -164,3 +170,38 @@ def search_results(request):
 #     my_images = Instagram_post.objects.filter(user=current_user)
 #     print(my_images)
 #     return render (request, 'profile.html', {'images':my_images})
+
+def like(request,image_id):
+    user = request.user
+    post = Post.objects.get(id = image_id)
+    current_likes = post.likes
+    liked = Like.objects.filter(user = user,post = post).count()
+    if not liked:
+        Like.objects.create(user = user,post = post)
+        current_likes = current_likes + 1
+    else:
+        Like.objects.filter(user = user,post = post).delete()  
+        current_likes = current_likes - 1
+
+    post.likes = current_likes
+    post.save()
+
+    return redirect('post')
+
+def new_comment(request,pk):
+    post = Post.objects.get(pk = pk)
+    comments = Comment.objects.all()
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            # name = request.user.username
+            comment= form.cleaned_data['comment']
+            obj = Comment(post = post,comment = comment,date = datetime.now())
+            obj.save()
+            print('object',obj)
+        return redirect('post')
+    else:
+        form = CommentForm()
+        print(form)
+
+    return render(request, 'accounts_pages/comment.html', {"form": form,"comments":comments})     

@@ -57,19 +57,23 @@
                         alt="image" width="35" height="35">
                         {{image.user.user.username|title}}
                     </div>
-                    <div class="card-body mb-4">
+                    <div class="card-body mb-4" id="postcont"> 
                         <a href="{% url 'image' image.id %}"><img src="{{image.image_post.url}}" style="width:100%;" class="card-img" alt="Image"></a>
                             <br><br>
                             <p><strong>Caption:</strong> {{image.caption}}</p>
                             <p><strong>Posted:</strong> {{image.created_at}}</p> 
+                            <a href="{% url 'postlike' image.id %}"> <i class="far fa-heart"></i></a>
+                            <div class="likes">
+                                <a href="">{{image.likes}} likes</a>
+                            </div>
+
                             <em><p><strong>Comments:</strong></p></em>
-                            {% for comment in comments %}
-                            {% if comment.image_id == image.id%}
+                            <!-- {% for comment in comments %} -->
                                 <p><strong>{{comment.user}}:</strong> {{comment.comment}}</p>
                                 <p>{{comment.posted | timesince}}</p><hr>
-                            {% endif %}
-                        {% endfor %}
-                        <a href=" {% url 'comment' image_id=image.id %}"><i class="fa fa-comment fa-2x"></i>Add a comment</a><br><br>
+                        <!-- {% endfor %} -->
+
+                        <a href=" {% url 'comment' image.id %}"><i class="far fa-comment "></i>Add a comment</a><br><br>
                     </div>
                     </div>
                 {% endfor %}
