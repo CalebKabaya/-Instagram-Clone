@@ -124,7 +124,7 @@ def post(request):
             return redirect('post')
     else:
         form = PostForm()
-    return render(request, 'index.html', {"images":images[::-1], "form": form, "users": users, "comments": comments })
+    return render(request, 'index.html', {"images":images[::-1], "form": form, "users": users,"comments":comments })
 
 
 def image(request,image_id):
@@ -192,6 +192,7 @@ def new_comment(request,pk):
     post = Post.objects.get(pk = pk)
     comments = Comment.objects.all()
     if request.method == 'POST':
+
         form = CommentForm(request.POST)
         if form.is_valid():
             # name = request.user.username

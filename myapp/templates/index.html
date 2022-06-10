@@ -68,10 +68,10 @@
                             </div>
 
                             <em><p><strong>Comments:</strong></p></em>
-                            <!-- {% for comment in comments %} -->
+                            {% for comment in comments %}
                                 <p><strong>{{comment.user}}:</strong> {{comment.comment}}</p>
                                 <p>{{comment.posted | timesince}}</p><hr>
-                        <!-- {% endfor %} -->
+                        {% endfor %}
 
                         <a href=" {% url 'comment' image.id %}"><i class="far fa-comment "></i>Add a comment</a><br><br>
                     </div>
